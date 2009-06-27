@@ -13,4 +13,8 @@ LOCAL_SRC_FILES := $(call all-subdir-java-files)
 
 LOCAL_PACKAGE_NAME := Browser
 
+#ifeq ($(strip $(TARGET_ARCH)),mips)
+LOCAL_ASSET_DIR := $(LOCAL_PATH)/arch-mips/assets
+#endif
+
 include $(BUILD_PACKAGE)
