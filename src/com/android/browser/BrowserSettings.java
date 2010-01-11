@@ -267,7 +267,7 @@ class BrowserSettings extends Observable {
 
         homeUrl =
             p.getString(PREF_HOMEPAGE, homeUrl);
-
+	userAgent = Integer.parseInt(p.getString("user_agent", "0"));
         loadsImagesAutomatically = p.getBoolean("load_images",
                 loadsImagesAutomatically);
         javaScriptEnabled = p.getBoolean("enable_javascript",
@@ -337,7 +337,6 @@ class BrowserSettings extends Observable {
             lightTouch = p.getBoolean("enable_light_touch", lightTouch);
             navDump = p.getBoolean("enable_nav_dump", navDump);
             doFlick = p.getBoolean("enable_flick", doFlick);
-            userAgent = Integer.parseInt(p.getString("user_agent", "0"));
         }
         // JS flags is loaded from DB even if showDebugSettings is false,
         // so that it can be set once and be effective all the time.

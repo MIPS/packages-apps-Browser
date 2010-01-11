@@ -450,7 +450,7 @@
     <!-- Do not tranlsate.  Development option -->
     <string name="js_engine_flags" translatable="false">Set JS flags</string>
     <!-- Do not tranlsate.  Development option -->
-    <string name="pref_development_uastring" translatable="false">UAString</string>
+    <string name="pref_development_uastring" translatable="false">User Agent String</string>
     <!-- Do not tranlsate.  Development option -->
     <string-array name="pref_development_ua_choices" translatable="false">
         <item>Android</item>
