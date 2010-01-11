@@ -149,6 +149,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.net.NetworkInterface;
 
 public class BrowserActivity extends Activity
     implements View.OnCreateContextMenuListener,
@@ -2596,6 +2597,18 @@ public class BrowserActivity extends Activity
             mDidStopLoad = false;
             showFakeTitleBar();
             updateInLoadMenuItems();
+
+            try{
+                NetworkInterface ni = NetworkInterface.getByName("eth0");
+                Enumeration e2 = ni.getInetAddresses();
+                if ( e2.hasMoreElements() )
+                    mIsNetworkUp = true;
+                else
+                    mIsNetworkUp = false;
+            }
+            catch ( Exception e ) {
+                mIsNetworkUp = false;
+            }
             if (!mIsNetworkUp) {
                 createAndShowNetworkDialog();
                 if (view != null) {

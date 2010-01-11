@@ -62,13 +62,14 @@
             android:title="@string/js_engine_flags"
             android:singleLine="true" />
 
+<!--   Already in the regular menu...
         <ListPreference
             android:key="user_agent"
             android:title="@string/pref_development_uastring"
             android:entries="@array/pref_development_ua_choices"
             android:entryValues="@array/pref_development_ua_values"
-            android:defaultValue="0"/>
+            android:defaultValue="0"/>  -->
 
-    </PreferenceCategory>
+    </PreferenceCategory> 
 
 </PreferenceScreen>
