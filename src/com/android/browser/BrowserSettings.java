@@ -17,14 +17,22 @@
 
 package com.android.browser;
 
+import com.android.browser.search.SearchEngine;
+import com.android.browser.search.SearchEngines;
+
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.ContentObserver;
+import android.os.Handler;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.provider.Settings;
+import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
@@ -71,6 +79,7 @@ class BrowserSettings extends Observable {
     private boolean openInBackground;
     private String defaultTextEncodingName;
     private String homeUrl = "";
+    private SearchEngine searchEngine;
     private boolean autoFitPage;
     private boolean landscapeOnly;
     private boolean loadsPageInOverviewMode;
@@ -121,6 +130,7 @@ class BrowserSettings extends Observable {
     public final static String PREF_CLEAR_COOKIES = "privacy_clear_cookies";
     public final static String PREF_CLEAR_HISTORY = "privacy_clear_history";
     public final static String PREF_HOMEPAGE = "homepage";
+    public final static String PREF_SEARCH_ENGINE = "search_engine";
     public final static String PREF_CLEAR_FORM_DATA =
             "privacy_clear_form_data";
     public final static String PREF_CLEAR_PASSWORDS =
@@ -234,7 +244,7 @@ class BrowserSettings extends Observable {
      *            stored in this BrowserSettings object. This will update all
      *            observers of this object.
      */
-    public void loadFromDb(Context ctx) {
+    public void loadFromDb(final Context ctx) {
         SharedPreferences p =
                 PreferenceManager.getDefaultSharedPreferences(ctx);
         // Set the default value for the Application Caches path.
@@ -266,17 +276,34 @@ class BrowserSettings extends Observable {
             pageCacheCapacity = 1;
         }
 
-        // Load the defaults from the xml
+    // Load the defaults from the xml
         // This call is TOO SLOW, need to manually keep the defaults
         // in sync
         //PreferenceManager.setDefaultValues(ctx, R.xml.browser_preferences);
-        syncSharedPreferences(p);
+        syncSharedPreferences(ctx, p);
     }
 
-    /* package */ void syncSharedPreferences(SharedPreferences p) {
+    /* package */ void syncSharedPreferences(Context ctx, SharedPreferences p) {
 
         homeUrl =
             p.getString(PREF_HOMEPAGE, homeUrl);
+        String searchEngineName = p.getString(PREF_SEARCH_ENGINE,
+                SearchEngine.GOOGLE);
+        if (searchEngine == null || !searchEngine.getName().equals(searchEngineName)) {
+            if (searchEngine != null) {
+                if (searchEngine.supportsVoiceSearch()) {
+                    // One or more tabs could have been in voice search mode.
+                    // Clear it, since the new SearchEngine may not support
+                    // it, or may handle it differently.
+                    for (int i = 0; i < mTabControl.getTabCount(); i++) {
+                        mTabControl.getTab(i).revertVoiceSearchMode();
+                    }
+                }
+                searchEngine.close();
+            }
+            searchEngine = SearchEngines.get(ctx, searchEngineName);
+        }
+        Log.i(TAG, "Selected search engine: " + searchEngine);
 
         loadsImagesAutomatically = p.getBoolean("load_images",
                 loadsImagesAutomatically);
@@ -367,6 +394,10 @@ class BrowserSettings extends Observable {
 
     public String getHomePage() {
         return homeUrl;
+    }
+
+    public SearchEngine getSearchEngine() {
+        return searchEngine;
     }
 
     public String getJsFlags() {

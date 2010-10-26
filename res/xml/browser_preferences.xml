@@ -192,6 +192,14 @@
     <PreferenceCategory
             android:title="@string/pref_extras_title">
 
+            <!-- Entries and values in this list are set dynamically. -->
+            <com.android.browser.search.SearchEnginePreference
+                    android:key="search_engine"
+                    android:title="@string/pref_content_search_engine"
+                    android:defaultValue="google"
+                    android:summary="@string/pref_content_search_engine_summary"
+                    android:dialogTitle="@string/pref_content_search_engine" />
+
             <PreferenceScreen
                   android:key="website_settings"
                   android:title="@string/pref_extras_website_settings"
